@@ -30,6 +30,8 @@ function gameLoop() {
 }
 
 function update() {
+
+  // updates head direction on key press
   const head = { x: sneck[0].x + dx, y: sneck[0].y + dy };
 
   // GAME OVER if sneck collides with wall
@@ -37,21 +39,29 @@ function update() {
     gameOver = true;
 
     //TO DO: change into Game Over Pop-up ↓↓↓
-    alert("Game Over!");
+    alert("Game Over! Didn't see the wall coming!");
     return;
   }
 
-  //GAME OVER if sneck collides with neck
-  for (let neck of sneck) {
-    if (neck.x === head.x && neck.y == sneck.y) {
+  // GAME OVER if sneck collides with neck
+    for (let i = 1; i < sneck.length; i++) {
+    if (sneck[i].x === head.x && sneck[i].y === head.y) {
       gameOver = true;
-
-      //TO DO: change into Game Over Pop-up ↓↓↓
-      alert("Game Over!");
-
+      alert("Game Over! You bit your neck!");
       return;
     }
   }
+
+  // for (let neck of sneck) {
+  //   if (neck.x === head.x && neck.y === head.y) {
+  //     gameOver = true;
+
+  //     //TO DO: change into Game Over Pop-up ↓↓↓
+  //     alert("Game Over! You ate your neck!");
+
+  //     return;
+  //   }
+  // }
 
   // CONTINUE if no wall collision
   sneck.unshift(head);
@@ -109,33 +119,51 @@ function updateCoordinates(newdx, newdy) {
 }
 
 // controls
-
 document.addEventListener("keydown", (e) => {
   switch (e.key) {
+
+    // ARROWS
     case "ArrowUp":
-      if (dy === 0) { updateCoordinates(0,-1) }
-      break;
-    case 'W'.toLowerCase():
       if (dy === 0) { updateCoordinates(0,-1) }
       break;
     case "ArrowDown":
       if (dy === 0) { updateCoordinates(0,1) }
       break;
-    case 'S'.toLowerCase():
-      if (dy === 0) { updateCoordinates(0,1) }
-      break;
     case "ArrowLeft":
-      if (dx === 0) { updateCoordinates(-1,0) }
-      break;
-    case 'A'.toLowerCase():
       if (dx === 0) { updateCoordinates(-1,0) }
       break;
     case "ArrowRight":
       if (dx === 0) { updateCoordinates(1,0) }
       break;
-    case 'D'.toLowerCase():
+
+    // UPPERCASE!
+    case 'W':
+      if (dy === 0) { updateCoordinates(0,-1) }
+      break;
+    case 'S':
+      if (dy === 0) { updateCoordinates(0,1) }
+      break;
+    case 'A':
+      if (dx === 0) { updateCoordinates(-1,0) }
+      break;
+    case 'D':
       if (dx === 0) { updateCoordinates(1,0) }
       break;
+
+    // lowercase!
+    case 'w':
+      if (dy === 0) { updateCoordinates(0,-1) }
+      break;
+    case 's':
+      if (dy === 0) { updateCoordinates(0,1) }
+      break;
+    case 'a':
+      if (dx === 0) { updateCoordinates(-1,0) }
+      break;
+    case 'd':
+      if (dx === 0) { updateCoordinates(1,0) }
+      break;
+
     case 'Escape':
       pause = !pause;
   }
