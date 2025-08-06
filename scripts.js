@@ -52,17 +52,6 @@ function update() {
     }
   }
 
-  // for (let neck of sneck) {
-  //   if (neck.x === head.x && neck.y === head.y) {
-  //     gameOver = true;
-
-  //     //TO DO: change into Game Over Pop-up ↓↓↓
-  //     alert("Game Over! You ate your neck!");
-
-  //     return;
-  //   }
-  // }
-
   // CONTINUE if no wall collision
   sneck.unshift(head);
 
@@ -118,54 +107,82 @@ function updateCoordinates(newdx, newdy) {
   dy = newdy;
 }
 
+function resume() {
+  pause = false;
+}
+
+function up() {
+  resume(); 
+  updateCoordinates(0,-1);
+}
+
+function down() {
+  resume();
+  updateCoordinates(0,1);
+}
+
+function left() {
+  resume();
+  updateCoordinates(-1,0);
+}
+
+function right() {
+  resume();
+  updateCoordinates(1,0);
+}
+
 // controls
 document.addEventListener("keydown", (e) => {
   switch (e.key) {
 
     // ARROWS
     case "ArrowUp":
-      if (dy === 0) { updateCoordinates(0,-1) }
+      if (dy === 0) { up(); }
       break;
     case "ArrowDown":
-      if (dy === 0) { updateCoordinates(0,1) }
+      if (dy === 0) { down(); }
       break;
     case "ArrowLeft":
-      if (dx === 0) { updateCoordinates(-1,0) }
+      if (dx === 0) { left(); }
       break;
     case "ArrowRight":
-      if (dx === 0) { updateCoordinates(1,0) }
+      if (dx === 0) { right(); }
       break;
 
     // UPPERCASE!
     case 'W':
-      if (dy === 0) { updateCoordinates(0,-1) }
+      if (dy === 0) { up(); }
       break;
     case 'S':
-      if (dy === 0) { updateCoordinates(0,1) }
+      if (dy === 0) { down(); }
       break;
     case 'A':
-      if (dx === 0) { updateCoordinates(-1,0) }
+      if (dx === 0) { left(); }
       break;
     case 'D':
-      if (dx === 0) { updateCoordinates(1,0) }
+      if (dx === 0) { right(); }
       break;
 
     // lowercase!
     case 'w':
-      if (dy === 0) { updateCoordinates(0,-1) }
+      if (dy === 0) { up(); }
       break;
     case 's':
-      if (dy === 0) { updateCoordinates(0,1) }
+      if (dy === 0) { down(); }
       break;
     case 'a':
-      if (dx === 0) { updateCoordinates(-1,0) }
+      if (dx === 0) { left(); }
       break;
     case 'd':
-      if (dx === 0) { updateCoordinates(1,0) }
+      if (dx === 0) { right(); }
       break;
 
     case 'Escape':
       pause = !pause;
+      break;
+    case " ":
+      pause = !pause;
+      break;
   }
 });
 
