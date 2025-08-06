@@ -2,11 +2,13 @@ const canvas = document.getElementById("sneckCanvas");
 const context = canvas.getContext('2d');
 const gridSize = 20;
 const tileCount = canvas.width/gridSize;
+let pausey = document.getElementById("pause-text");
 let sneck = [ {x: 10, y:10} ]
 let dx = 0;
 let dy = 0;
 let food = spawnFood();
 let gameOver = false;
+let pause = false;
 
 function gameLoop() {
   if (gameOver) return;
@@ -15,6 +17,12 @@ function gameLoop() {
 
   // Actually game loop
   setTimeout(() => {
+    if (pause) {
+      pausey.style.display = "block";
+      gameLoop();
+      return;
+    }
+    pausey.style.display = "none";
     update();
     draw();
     gameLoop();
@@ -92,34 +100,44 @@ function spawnFood() {
   }
 }
 
+function updateCoordinates(newdx, newdy) {
+  if(pause) {
+    return;
+  }
+  dx = newdx;
+  dy = newdy;
+}
+
 // controls
 
 document.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "ArrowUp":
-      if (dy === 0) { dx = 0; dy = -1; }
+      if (dy === 0) { updateCoordinates(0,-1) }
       break;
-    case "W":
-      if (dy === 0) { dx = 0; dy = -1; }
+    case 'W'.toLowerCase():
+      if (dy === 0) { updateCoordinates(0,-1) }
       break;
     case "ArrowDown":
-      if (dy === 0) { dx = 0; dy = 1; }
+      if (dy === 0) { updateCoordinates(0,1) }
       break;
-    case "S":
-      if (dy === 0) { dx = 0; dy = 1; }
+    case 'S'.toLowerCase():
+      if (dy === 0) { updateCoordinates(0,1) }
       break;
     case "ArrowLeft":
-      if (dx === 0) { dx = -1; dy = 0; }
+      if (dx === 0) { updateCoordinates(-1,0) }
       break;
-    case "A":
-      if (dx === 0) { dx = -1; dy = 0; }
+    case 'A'.toLowerCase():
+      if (dx === 0) { updateCoordinates(-1,0) }
       break;
     case "ArrowRight":
-      if (dx === 0) { dx = 1; dy = 0; }
+      if (dx === 0) { updateCoordinates(1,0) }
       break;
-    case "D":
-      if (dy === 0) { dx = 1; dy = 0; }
+    case 'D'.toLowerCase():
+      if (dx === 0) { updateCoordinates(1,0) }
       break;
+    case 'Escape':
+      pause = !pause;
   }
 });
 
