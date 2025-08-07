@@ -9,6 +9,25 @@ let dy = 0;
 let food = spawnFood();
 let gameOver = false;
 let pause = false;
+let score = 0;
+
+function reset() {
+  gameOver = false;
+  pause = false;
+  score = 0;
+}
+
+function startGame() {
+  document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("game").style.display = "block";
+  reset();
+  updateScore();
+  gameLoop();
+}
+
+function updateScore() {
+  document.getElementById("score").textContent = "Score: " + score;
+}
 
 function gameLoop() {
   if (gameOver) return;
@@ -57,6 +76,8 @@ function update() {
 
   // EAT FOOD
   if (head.x === food.x && head.y === food.y) {
+    score += 1;
+    updateScore();
     food = spawnFood();
   } else {
     sneck.pop(); // remove tail
@@ -186,4 +207,5 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+updateScore();
 gameLoop();
