@@ -2,6 +2,7 @@ const canvas = document.getElementById("sneckCanvas");
 const context = canvas.getContext('2d');
 const gridSize = 20;
 const tileCount = canvas.width/gridSize;
+const menu = document.getElementById("mainMenu");
 let pausey = document.getElementById("pause-text");
 let sneck = [ {x: 10, y:10} ]
 let dx = 0;
@@ -12,14 +13,26 @@ let pause = false;
 let score = 0;
 
 function reset() {
+  sneck = [ {x: 10, y:10} ]
+  food = spawnFood();
+  dx = 0;
+  dy = 0;
   gameOver = false;
   pause = false;
   score = 0;
 }
 
+function gameOverScreen() {
+  gameOver = true;
+  document.getElementById("gameOverMenu").style.display = "block";
+  document.getElementById("gameOverScore").textContent = "Score: " + score;
+}
+
 function startGame() {
   document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("gameOverMenu").style.display = "none";
   document.getElementById("game").style.display = "block";
+  document.getElementById("score").style.display = "block";
   reset();
   updateScore();
   gameLoop();
@@ -55,18 +68,14 @@ function update() {
 
   // GAME OVER if sneck collides with wall
   if (head.x < 0 || head.y < 0 || head.x >= tileCount || head.y >= tileCount) {
-    gameOver = true;
-
-    //TO DO: change into Game Over Pop-up ↓↓↓
-    alert("Game Over! Didn't see the wall coming!");
+    gameOverScreen();
     return;
   }
 
   // GAME OVER if sneck collides with neck
     for (let i = 1; i < sneck.length; i++) {
     if (sneck[i].x === head.x && sneck[i].y === head.y) {
-      gameOver = true;
-      alert("Game Over! You bit your neck!");
+      gameOverScreen();
       return;
     }
   }

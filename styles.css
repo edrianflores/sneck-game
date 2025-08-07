@@ -16,6 +16,10 @@ canvas {
   display: none;
 }
 
+#gameOverMenu {
+  display: none;
+}
+
 .menu {
   position: absolute;
   top: 50%;
@@ -40,8 +44,4 @@ canvas {
   margin: 10px auto;
   font-size: 16px;
   cursor: pointer;
-}
-
-#score {
-  display: none; /* Initially hidden until game starts */
 }
