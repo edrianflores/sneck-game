@@ -3,6 +3,8 @@ const context = canvas.getContext('2d');
 const gridSize = 20;
 const tileCount = canvas.width/gridSize;
 const menu = document.getElementById("mainMenu");
+const headPNG = new Image();
+
 let pausey = document.getElementById("pause-text");
 let sneck = [ {x: 10, y:10} ]
 let dx = 0;
@@ -11,6 +13,7 @@ let food = spawnFood();
 let gameOver = false;
 let pause = false;
 let score = 0;
+headPNG.src = "./assets/sneck-head-1.png";
 
 function reset() {
   sneck = [ {x: 10, y:10} ]
@@ -96,14 +99,24 @@ function update() {
 function draw() {
   context.clearRect(0,0, canvas.width, canvas.height);
 
-    // TO DO: add doki-head.png
-
   // Draw Sneck
   // TO DO: Replace with doki-neck.png ↓↓↓
   context.fillStyle = 'lime';
-  sneck.forEach(neck => {
-    context.fillRect(neck.x * gridSize, neck.y * gridSize, gridSize, gridSize);
+  // sneck.forEach(neck => {
+  //   context.fillRect(neck.x * gridSize, neck.y * gridSize, gridSize, gridSize);
+  // });
+
+  sneck.forEach((neck, index) => {
+    if (index === 0) {
+      context.drawImage(headPNG, neck.x * gridSize, neck.y * gridSize, gridSize, gridSize);
+    } else {
+      // TO DO: Replace body with doki-body
+      context.fillStyle = "yellow";
+      context.fillRect(neck.x * gridSize, neck.y * gridSize, gridSize, gridSize);
+    }
   });
+
+
 
   // Draw Food.
   // TO DO: Replace with food.png ↓↓↓
