@@ -49,10 +49,21 @@ function startGame() {
 
 // Random food position
 function randomFood() {
-  return {
-    x: Math.floor(Math.random() * tileCount),
-    y: Math.floor(Math.random() * tileCount),
-  };
+  let newFood;
+
+  // Loops infinitely until return statement.
+  // Will end loop, then spawn food when random tile for new food is empty.
+  while (true) {
+    newFood = {
+      x: Math.floor(Math.random() * tileCount),
+      y: Math.floor(Math.random() * tileCount),
+    }
+
+    // Code to avoid spawning food in tiles with sneck
+    if (!sneck.some(neck => neck.x === newFood.x && neck.y === newFood.y)) {
+      return newFood;
+    }
+  }
 }
 
 // Draw everything
