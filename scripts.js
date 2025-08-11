@@ -1,233 +1,183 @@
-const canvas = document.getElementById("sneckCanvas");
-const context = canvas.getContext('2d');
-const gridSize = 20;
-const tileCount = canvas.width/gridSize;
-const menu = document.getElementById("mainMenu");
-const headPNG = new Image();
+const canvas = document.getElementById("gameCanvas");
+const context = canvas.getContext("2d");
+const mainMenu = document.getElementById("mainMenu");
+const gameOverMenu = document.getElementById("gameOverMenu")
+const pauseMenu = document.getElementById("pauseMenu");
+const pauseScore = document.getElementById("score");
+const startButtons = document.querySelectorAll("#startBtn");
+const scoreTexts = document.querySelectorAll("#score");
 
-let pausey = document.getElementById("pause-text");
-let sneck = [ {x: 10, y:10} ]
-let dx = 0;
+const gridSize = 40;
+const tileCount = canvas.width / gridSize;
+
+let sneck = [{ x: randomSpawn(), y: randomSpawn() }];
+let dx = 1;
 let dy = 0;
-let food = spawnFood();
-let gameOver = false;
-let pause = false;
+let food = randomFood();
 let score = 0;
-headPNG.src = "./assets/sneck-head-1.png";
+let gameInterval;
+let paused = false;
 
-function reset() {
-  sneck = [ {x: 10, y:10} ]
-  food = spawnFood();
-  dx = 0;
-  dy = 0;
-  gameOver = false;
-  pause = false;
-  score = 0;
+// Load images
+const headImage = new Image();
+headImage.src = "./assets/head-close-mouth.png";
+const neckHorizontalImage = new Image();
+neckHorizontalImage.src = "./assets/neck-horizontal.png";
+const neckVerticalImage = new Image();
+neckVerticalImage.src = "./assets/neck-vertical.png";
+
+function generateRandomInteger(min, max) {
+  return Math.floor(min + Math.random()*(max - min + 1))
 }
 
-function gameOverScreen() {
-  gameOver = true;
-  document.getElementById("gameOverMenu").style.display = "block";
-  document.getElementById("gameOverScore").textContent = "Score: " + score;
+function randomSpawn() {
+  return generateRandomInteger(0, tileCount-4)
 }
 
+// Game Loop
 function startGame() {
-  document.getElementById("mainMenu").style.display = "none";
-  document.getElementById("gameOverMenu").style.display = "none";
-  document.getElementById("game").style.display = "block";
-  document.getElementById("score").style.display = "block";
-  reset();
-  updateScore();
-  gameLoop();
+  sneck = [{ x: randomSpawn(), y: randomSpawn() }];
+  dx = 1;
+  dy = 0;
+  score = 0;
+  food = randomFood();
+  paused = false;
+
+  if (gameInterval) clearInterval(gameInterval);
+  gameInterval = setInterval(gameLoop, 100); // Adjust speed here
+}
+
+// Random food position
+function randomFood() {
+  return {
+    x: Math.floor(Math.random() * tileCount),
+    y: Math.floor(Math.random() * tileCount),
+  };
+}
+
+// Draw everything
+function draw() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < sneck.length; i++) {
+    const neck = sneck[i];
+    const x = neck.x * gridSize;
+    const y = neck.y * gridSize;
+
+    if (i === 0) {
+      // Draw head with rotation
+      context.save();
+      context.translate(x + gridSize / 2, y + gridSize / 2);
+      if (dx === 1) context.rotate(Math.PI / 2);         // right
+      else if (dx === -1) context.rotate(-Math.PI / 2); // left
+      else if (dy === -1) context.rotate(0); // up
+      else if (dy === 1) context.rotate(Math.PI);  // down
+      context.drawImage(headImage, -gridSize / 2, -gridSize / 2, gridSize, gridSize);
+      context.restore();
+    } else {
+      // Determine if sneck is horizontal or vertical
+      const prev = sneck[i - 1];
+      if (prev.x !== neck.x) {
+        // Horizontal
+        context.drawImage(neckHorizontalImage, x, y, gridSize, gridSize);
+      } else {
+        // Vertical
+        context.drawImage(neckVerticalImage, x, y, gridSize, gridSize);
+      }
+    }
+  }
+
+  // Draw food
+  context.fillStyle = "red";
+  context.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+
+  // Draw score
+  context.fillStyle = "white";
+  context.font = "20px Arial";
+  context.fillText("Score: " + score, 10, 20);
+}
+
+// Update game logic
+function update() {
+  const head = { x: sneck[0].x + dx, y: sneck[0].y + dy };
+
+  // Collision with walls
+  if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+    gameOver();
+    return;
+  }
+
+  // Collision with self
+  for (let i = 1; i < sneck.length; i++) {
+    if (sneck[i].x === head.x && sneck[i].y === head.y) {
+      gameOver();
+      return;
+    }
+  }
+
+  sneck.unshift(head);
+
+  // Eating food
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    food = randomFood();
+  } else {
+    sneck.pop();
+  }
 }
 
 function updateScore() {
-  document.getElementById("score").textContent = "Score: " + score;
+  scoreTexts.forEach((scoreText) => {
+    scoreText.textContent = "Score: " + score;
+  });
 }
 
 function gameLoop() {
-  if (gameOver) return;
-
-  // We add music and shit here outside of game loop
-
-  // Actually game loop
-  setTimeout(() => {
-    if (pause) {
-      pausey.style.display = "block";
-      gameLoop();
-      return;
-    }
-    pausey.style.display = "none";
-    update();
-    draw();
-    gameLoop();
-  }, 100);
-}
-
-function update() {
-
-  // updates head direction on key press
-  const head = { x: sneck[0].x + dx, y: sneck[0].y + dy };
-
-  // GAME OVER if sneck collides with wall
-  if (head.x < 0 || head.y < 0 || head.x >= tileCount || head.y >= tileCount) {
-    gameOverScreen();
+  if (paused) {
+    pauseMenu.style.display = "block";
     return;
   }
 
-  // GAME OVER if sneck collides with neck
-    for (let i = 1; i < sneck.length; i++) {
-    if (sneck[i].x === head.x && sneck[i].y === head.y) {
-      gameOverScreen();
-      return;
-    }
-  }
 
-  // CONTINUE if no wall collision
-  sneck.unshift(head);
 
-  // EAT FOOD
-  if (head.x === food.x && head.y === food.y) {
-    score += 1;
-    updateScore();
-    food = spawnFood();
-  } else {
-    sneck.pop(); // remove tail
-  }
+  pauseMenu.style.display = "none";
+  updateScore();
+  update();
+  draw();
 }
 
-function draw() {
-  context.clearRect(0,0, canvas.width, canvas.height);
-
-  // Draw Sneck
-  // TO DO: Replace with doki-neck.png ↓↓↓
-  context.fillStyle = 'lime';
-  // sneck.forEach(neck => {
-  //   context.fillRect(neck.x * gridSize, neck.y * gridSize, gridSize, gridSize);
-  // });
-
-  sneck.forEach((neck, index) => {
-    if (index === 0) {
-      context.drawImage(headPNG, neck.x * gridSize, neck.y * gridSize, gridSize, gridSize);
-    } else {
-      // TO DO: Replace body with doki-body
-      context.fillStyle = "yellow";
-      context.fillRect(neck.x * gridSize, neck.y * gridSize, gridSize, gridSize);
-    }
-  });
-
-
-
-  // Draw Food.
-  // TO DO: Replace with food.png ↓↓↓
-  context.fillStyle = "red";
-  context.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+function gameOver() {
+  clearInterval(gameInterval);
+  gameOverMenu.style.display = "block";
 }
 
-function spawnFood() {
-  let newFood;
-
-  // Loops infinitely until return statement.
-  // Will end loop, then spawn food when random tile for new food is empty.
-  while (true) {
-    newFood = {
-      x: Math.floor(Math.random() * tileCount),
-      y: Math.floor(Math.random() * tileCount),
-    }
-
-    // Code to avoid spawning food in tiles with sneck
-    if (!sneck.some(neck => neck.x === newFood.x && neck.y === newFood.y)) {
-      return newFood;
-    }
-  }
-}
-
-function updateCoordinates(newdx, newdy) {
-  if(pause) {
-    return;
-  }
-  dx = newdx;
-  dy = newdy;
-}
-
-function resume() {
-  pause = false;
-}
-
-function up() {
-  resume(); 
-  updateCoordinates(0,-1);
-}
-
-function down() {
-  resume();
-  updateCoordinates(0,1);
-}
-
-function left() {
-  resume();
-  updateCoordinates(-1,0);
-}
-
-function right() {
-  resume();
-  updateCoordinates(1,0);
-}
-
-// controls
+// Controls (Arrow keys + WASD)
 document.addEventListener("keydown", (e) => {
-  switch (e.key) {
-
-    // ARROWS
-    case "ArrowUp":
-      if (dy === 0) { up(); }
-      break;
-    case "ArrowDown":
-      if (dy === 0) { down(); }
-      break;
-    case "ArrowLeft":
-      if (dx === 0) { left(); }
-      break;
-    case "ArrowRight":
-      if (dx === 0) { right(); }
-      break;
-
-    // UPPERCASE!
-    case 'W':
-      if (dy === 0) { up(); }
-      break;
-    case 'S':
-      if (dy === 0) { down(); }
-      break;
-    case 'A':
-      if (dx === 0) { left(); }
-      break;
-    case 'D':
-      if (dx === 0) { right(); }
-      break;
-
-    // lowercase!
-    case 'w':
-      if (dy === 0) { up(); }
-      break;
-    case 's':
-      if (dy === 0) { down(); }
-      break;
-    case 'a':
-      if (dx === 0) { left(); }
-      break;
-    case 'd':
-      if (dx === 0) { right(); }
-      break;
-
-    case 'Escape':
-      pause = !pause;
-      break;
-    case " ":
-      pause = !pause;
-      break;
+  if ((e.key === "ArrowUp" || e.key === "w") && dy === 0) {
+    dx = 0;
+    dy = -1;
+  }
+  if ((e.key === "ArrowDown" || e.key === "s") && dy === 0) {
+    dx = 0;
+    dy = 1;
+  }
+  if ((e.key === "ArrowLeft" || e.key === "a") && dx === 0) {
+    dx = -1;
+    dy = 0;
+  }
+  if ((e.key === "ArrowRight" || e.key === "d") && dx === 0) {
+    dx = 1;
+    dy = 0;
+  }
+  if (e.key === "Escape" || e.key === " ") {
+    paused = !paused;
   }
 });
 
-updateScore();
-gameLoop();
+startButtons.forEach((startButton) => {
+  startButton.addEventListener("click", (event) => {
+    mainMenu.style.display = "none";
+    gameOverMenu.style.display = "none";
+    startGame();
+  });
+});

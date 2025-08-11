@@ -7,33 +7,31 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="mainMenu" class="menu">
-      <h1>Sneck Game</h1>
-      <button onclick="startGame()">Start Game</button>
-      <button onclick="showLeaderboard()">Leaderboard</button>
-      <button onclick="showSettings()">Settings</button>
-    </div>
-    <div id="gameOverMenu" class="menu">
-      <h1>GAME OVER!</h1>
-      <p id="gameOverScore">Score: </p>
-      <button onclick="startGame()">Restart</button>
-      <button onclick="showLeaderboard()">Leaderboard</button>
-      <button onclick="showSettings()">Settings</button>
-    </div>
-    <div id="game">
-      <h1>Sneck</h1>
-      <h2 id="pause-text" style="display: none">paused</h2>
-      <p id="score">Score: 0</p>
-      <canvas id="sneckCanvas" width="480" height="480"></canvas>
-      <div>
-        <p>
-          FPS: 99999999999 <span style="color: lightgrey">actually 10</span>
-        </p>
+    <div class="game">
+      <canvas id="gameCanvas" width="600" height="600"></canvas>
+      <div id="mainMenu" class="menu">
+        <h2>Snake Game</h2>
+        <button id="startBtn">Start Game</button>
+        <button id="leaderboardBtn">Leaderboard</button>
+        <button id="settingsBtn">Settings</button>
       </div>
-      <div>
-        <p>controls: WASD</p>
-        <p>controls: ⬆️⬇️⬅️➡️ Arrow Keys</p>
+      <div id="gameOverMenu" class="menu">
+        <h2>Game Over!</h2>
+        <p id="score"></p>
+        <button id="startBtn">Restart</button>
+        <button id="leaderboardBtn">Leaderboard</button>
+        <button id="settingsBtn">Settings</button>
       </div>
+      <div id="pauseMenu" class="menu">
+        <h2>Paused</h2>
+        <p id="score"></p>
+        <button id="startBtn">Restart</button>
+      </div>
+    </div>
+    <div id="details">
+      <p>FPS: 99999999999 <span style="color: lightgrey">actually 10</span></p>
+      <p>controls: WASD</p>
+      <p>controls: ⬆️⬇️⬅️➡️ Arrow Keys</p>
     </div>
     <script src="scripts.js"></script>
   </body>
