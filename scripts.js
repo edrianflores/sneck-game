@@ -1,7 +1,7 @@
 const canvas = document.getElementById("gameCanvas");
 const context = canvas.getContext("2d");
 const mainMenu = document.getElementById("mainMenu");
-const gameOverMenu = document.getElementById("gameOverMenu")
+const gameOverMenu = document.getElementById("gameOverMenu");
 const pauseMenu = document.getElementById("pauseMenu");
 const pauseScore = document.getElementById("score");
 const startButtons = document.querySelectorAll("#startBtn");
@@ -11,7 +11,7 @@ const gridSize = 40;
 const tileCount = canvas.width / gridSize;
 
 let sneck = [{ x: randomSpawn(), y: randomSpawn() }];
-let dx = 1;
+let dx = 0;
 let dy = 0;
 let food = randomFood();
 let score = 0;
@@ -19,32 +19,36 @@ let gameInterval;
 let paused = false;
 
 // Load images
+const backgroundImage = new Image();
+backgroundImage.src = "./assets/background-image.png";
 const headImage = new Image();
 headImage.src = "./assets/head-close-mouth.png";
 const neckHorizontalImage = new Image();
 neckHorizontalImage.src = "./assets/neck-horizontal.png";
 const neckVerticalImage = new Image();
 neckVerticalImage.src = "./assets/neck-vertical.png";
+const neckConnectorImage = new Image();
+neckConnectorImage.src = "./assets/neck-connector.png";
 
 function generateRandomInteger(min, max) {
-  return Math.floor(min + Math.random()*(max - min + 1))
+  return Math.floor(min + Math.random() * (max - min + 1));
 }
 
 function randomSpawn() {
-  return generateRandomInteger(0, tileCount-4)
+  return generateRandomInteger(0, tileCount - 4);
 }
 
 // Game Loop
 function startGame() {
   sneck = [{ x: randomSpawn(), y: randomSpawn() }];
-  dx = 1;
+  dx = 0;
   dy = 0;
   score = 0;
   food = randomFood();
   paused = false;
 
   if (gameInterval) clearInterval(gameInterval);
-  gameInterval = setInterval(gameLoop, 100); // Adjust speed here
+  gameInterval = setInterval(backgroundImage.onload = () => { gameLoop(); }, 100); // Adjust speed here
 }
 
 // Random food position
@@ -57,10 +61,10 @@ function randomFood() {
     newFood = {
       x: Math.floor(Math.random() * tileCount),
       y: Math.floor(Math.random() * tileCount),
-    }
+    };
 
     // Code to avoid spawning food in tiles with sneck
-    if (!sneck.some(neck => neck.x === newFood.x && neck.y === newFood.y)) {
+    if (!sneck.some((neck) => neck.x === newFood.x && neck.y === newFood.y)) {
       return newFood;
     }
   }
@@ -68,9 +72,9 @@ function randomFood() {
 
 // Draw everything
 function draw() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
-    for (let i = 0; i < sneck.length; i++) {
+  for (let i = 0; i < sneck.length; i++) {
     const neck = sneck[i];
     const x = neck.x * gridSize;
     const y = neck.y * gridSize;
@@ -79,21 +83,64 @@ function draw() {
       // Draw head with rotation
       context.save();
       context.translate(x + gridSize / 2, y + gridSize / 2);
-      if (dx === 1) context.rotate(Math.PI / 2);         // right
+      if (dx === 1) context.rotate(Math.PI / 2); // right
       else if (dx === -1) context.rotate(-Math.PI / 2); // left
       else if (dy === -1) context.rotate(0); // up
-      else if (dy === 1) context.rotate(Math.PI);  // down
-      context.drawImage(headImage, -gridSize / 2, -gridSize / 2, gridSize, gridSize);
+      else if (dy === 1) context.rotate(Math.PI); // down
+      context.drawImage(
+        headImage,
+        -gridSize / 2,
+        -gridSize / 2,
+        gridSize,
+        gridSize
+      );
       context.restore();
-    } else {
-      // Determine if sneck is horizontal or vertical
+    } 
+    
+    else if (i === sneck.length - 1) {
       const prev = sneck[i - 1];
       if (prev.x !== neck.x) {
-        // Horizontal
         context.drawImage(neckHorizontalImage, x, y, gridSize, gridSize);
       } else {
-        // Vertical
         context.drawImage(neckVerticalImage, x, y, gridSize, gridSize);
+      }
+    }
+    
+    else {
+      const prev = sneck[i - 1];
+      const next = sneck[i + 1];
+
+      const prevDir = { x: prev.x - neck.x, y: prev.y - neck.y};
+      const nextDir = { x: next.x - neck.x, y: next.y - neck.y};
+
+      // Check if straight
+      if (prevDir.x === nextDir.x || prevDir.y === nextDir.y) {
+        if (prevDir.x !== 0) {
+          context.drawImage(neckHorizontalImage, x, y, gridSize, gridSize);
+        } else {
+          context.drawImage(neckVerticalImage, x, y, gridSize, gridSize);
+        }
+      }
+      // If not straight
+      else {
+        context.save();
+        context.translate(x + gridSize / 2, y + gridSize / 2);
+
+        if ((prevDir.x === -1 && nextDir.y === -1) || (nextDir.x === -1 && prevDir.y === -1)) {
+          context.rotate(-Math.PI / 2); // Top-left
+        }
+        else if ((prevDir.y === -1 && nextDir.x === 1) || (nextDir.y === -1 && prevDir.x === 1)) {
+          context.rotate(0); // Top-right
+        }
+        else if ((prevDir.x === 1 && nextDir.y === 1) || (nextDir.x === 1 && prevDir.y === 1)) {
+          context.rotate(Math.PI / 2); // Bottom-right
+        }
+        else if ((prevDir.y === 1 && nextDir.x === -1) || (nextDir.y === 1 && prevDir.x === -1)) {
+          context.rotate(Math.PI); // Bottom-left
+        }
+
+        context.drawImage(neckConnectorImage, -gridSize / 2, -gridSize / 2, gridSize, gridSize);
+        context.restore();
       }
     }
   }
@@ -148,8 +195,6 @@ function gameLoop() {
     pauseMenu.style.display = "block";
     return;
   }
-
-
 
   pauseMenu.style.display = "none";
   updateScore();
