@@ -27,6 +27,11 @@ const neckConnectorImage = new Image();
 neckConnectorImage.src = "./assets/neck-connector-transparent.png";
 // #endregion
 
+// #region Audio SFX
+const eatSound = new Audio("assets/eat-orb-normal-sfx.wav");
+const gameOverSound = new Audio("assets/game-over-sfx.WAV");
+// #endregion
+
 // #region Orb Class
 class Orb {
   constructor(image, frameCount, frameWidth, frameHeight, animationSpeed) {
@@ -88,6 +93,11 @@ let food = randomFood();
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 // #endregion
+
+function playSound(audio) {
+  audio.currentTime = 0;
+  audio.play();
+}
 
 function generateRandomInteger(min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
@@ -303,6 +313,7 @@ function update() {
 
   // Eating food
   if (head.x === food.x && head.y === food.y) {
+    playSound(eatSound);
     score++;
     food = randomFood();
   } else {
@@ -335,6 +346,7 @@ function gameLoop() {
 }
 
 function gameOver() {
+  playSound(gameOverSound);
   clearInterval(gameInterval);
   gameOverMenu.style.display = "flex";
 }
