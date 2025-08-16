@@ -10,28 +10,48 @@
     <div class="game">
       <canvas id="gameCanvas" width="600" height="600"></canvas>
       <div id="mainMenu" class="menu">
-        <h2>Snake Game</h2>
-        <button id="startBtn">Start Game</button>
-        <button id="leaderboardBtn">Leaderboard</button>
-        <button id="settingsBtn">Settings</button>
+        <img src="assets/menu-bg.png" alt="Menu Background" class="menu-bg" />
+        <div class="menu-buttons">
+          <img
+            src="./assets/button-start.png"
+            alt="Start Game"
+            id="startBtn"
+            class="menu-btn"
+          />
+        </div>
       </div>
-      <div id="gameOverMenu" class="menu">
-        <h2>Game Over!</h2>
-        <p id="score"></p>
-        <button id="startBtn">Restart</button>
-        <button id="leaderboardBtn">Leaderboard</button>
-        <button id="settingsBtn">Settings</button>
+      <div id="pauseMenu" class="overlay">
+        <div class="overlay-window">
+          <img src="assets/pause-bg.png" alt="Pause Window" class="overlay-bg" />
+          <div class="overlay-buttons">
+            <img
+              id="resumeBtn"
+              src="assets/button-resume.png"
+              alt="Resume"
+              class="menu-btn"
+            />
+            <img
+              id="restartBtn"
+              src="assets/button-restart.png"
+              alt="Restart"
+              class="menu-btn"
+            />
+          </div>
+        </div>
       </div>
-      <div id="pauseMenu" class="menu">
-        <h2>Paused</h2>
-        <p id="score"></p>
-        <button id="startBtn">Restart</button>
+      <div id="gameOverMenu" class="overlay">
+        <div class="overlay-window">
+          <img src="assets/gameover-bg.png" alt="Game Over Window" class="overlay-bg" />
+          <div class="overlay-buttons">
+            <img
+              id="restartBtn"
+              src="./assets/button-restart-gameover.png"
+              alt="Restart"
+              class="menu-btn gameover-btn"
+            />
+          </div>
+        </div>
       </div>
-    </div>
-    <div id="details">
-      <p>FPS: 99999999999 <span style="color: lightgrey">actually 10</span></p>
-      <p>controls: WASD</p>
-      <p>controls: ⬆️⬇️⬅️➡️ Arrow Keys</p>
     </div>
     <script src="scripts.js"></script>
   </body>

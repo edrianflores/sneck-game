@@ -1,52 +1,126 @@
+html,
 body {
   margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
   background: #222;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  overflow: hidden;
   font-family: Arial, sans-serif;
 }
-canvas {
+
+#gameCanvas {
   background: #000;
   display: block;
+  width: 100vh;
+  height: 100vh;
 }
+
 .menu {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white; /* Opaque white menu */
-  padding: 30px;
-  border-radius: 15px;
-  text-align: center;
-  width: 250px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+  width: 100vh; /* same as canvas */
+  height: 100vh; /* same as canvas */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   z-index: 2;
 }
-.menu button {
-  display: block;
-  margin: 15px auto;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  background: #444;
-  color: white;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.menu button:hover {
-  background: #666;
+
+.menu-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fill canvas */
+  top: 0;
+  left: 0;
+  z-index: -1;
 }
 
-#pauseMenu {
-  display: none;
+.menu-buttons {
+  position: absolute;
+  bottom: 120px;
+  left: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.menu-btn {
+  width: 200px; /* adjust button size */
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.menu-btn:hover {
+  transform: scale(1.05);
+}
+
+.menu-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* Hidden until paused */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 3;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* hidden until paused */
+  background: rgba(0, 0, 0, 0.4); /* darkened backdrop */
+  z-index: 4;
+  justify-content: center;
+  align-items: center; /* this centers the pause window */
+}
+
+.overlay-window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.overlay-bg {
+  width: 400px; /* size of the pause window PNG */
+  border-radius: 12px;
+}
+
+.overlay-buttons {
+  position: absolute;
+  bottom: 15%; /* place buttons inside PNG */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  width: 100%;
 }
 
 #gameOverMenu {
   display: none;
 }
 
-#details {}
+.gameover-btn {
+  position: absolute;
+  bottom: -30px;
+  left: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
